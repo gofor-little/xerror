@@ -1,4 +1,4 @@
-## A package for formatted stack traces
+## A package for formatted error stack traces
 
 ![GitHub tag (latest SemVer pre-release)](https://img.shields.io/github/v/tag/gofor-little/xerror?include_prereleases)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/gofor-little/xerror)
@@ -8,7 +8,7 @@
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/gofor-little/xerror)](https://pkg.go.dev/github.com/gofor-little/xerror)
 
 ### Introduction
-* Formatted stack traces
+* Formatted error stack traces
 * Supports JSON marshaling
 * No dependencies outside the standard library
 
