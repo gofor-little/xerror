@@ -23,3 +23,18 @@ func TestNew(t *testing.T) {
 
 	require.Equal(t, expected, xerror.New("failed to do something", errors.New("the thing that failed")))
 }
+
+func TestNewf(t *testing.T) {
+	workingDirectory, err := os.Getwd()
+	require.NoError(t, err)
+
+	expected := &xerror.Error{
+		Err:          errors.New("the thing that failed"),
+		FunctionName: "github.com/gofor-little/xerror.Newf",
+		FileName:     workingDirectory + "/error.go",
+		LineNumber:   33,
+		Message:      "",
+	}
+
+	require.Equal(t, expected, xerror.Newf("the thing that %s", "failed"))
+}

@@ -27,11 +27,21 @@ func New(message string, err error) *Error {
 	}
 }
 
+// Newf is a helper function to create a new Error with formatting.
+func Newf(message string, args ...interface{}) *Error {
+	err := fmt.Errorf(message, args...)
+	return New("", err)
+}
+
 // Error implementes the Error interface to provide a formatted stack trace.
 func (e *Error) Error() string {
 	err, ok := e.Err.(*Error)
 	if ok {
 		return fmt.Sprintf("%s\n\t%s:%d: %s\n%s", e.FunctionName, e.FileName, e.LineNumber, e.Message, err.Error())
+	}
+
+	if e.Message == "" {
+		return fmt.Sprintf("%s\n\t%s:%d: %s", e.FunctionName, e.FileName, e.LineNumber, e.Err)
 	}
 
 	return fmt.Sprintf("%s\n\t%s:%d: %s: %s", e.FunctionName, e.FileName, e.LineNumber, e.Message, e.Err)
