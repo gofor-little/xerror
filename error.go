@@ -35,14 +35,13 @@ func Newf(message string, args ...interface{}) *Error {
 
 // Error implementes the Error interface to provide a formatted stack trace.
 func (e *Error) Error() string {
-	err, ok := e.Err.(*Error)
-	if ok {
+	if err, ok := e.Err.(*Error); ok {
 		return fmt.Sprintf("%s\n\t%s:%d: %s\n%s", e.FunctionName, e.FileName, e.LineNumber, e.Message, err.Error())
 	}
 
 	if e.Message == "" {
-		return fmt.Sprintf("%s\n\t%s:%d: %s", e.FunctionName, e.FileName, e.LineNumber, e.Err)
+		return fmt.Sprintf("%s\n\t%s:%d: %s", e.FunctionName, e.FileName, e.LineNumber, e.Err.Error())
 	}
 
-	return fmt.Sprintf("%s\n\t%s:%d: %s: %s", e.FunctionName, e.FileName, e.LineNumber, e.Message, e.Err)
+	return fmt.Sprintf("%s\n\t%s:%d: %s: %s", e.FunctionName, e.FileName, e.LineNumber, e.Message, e.Err.Error())
 }
