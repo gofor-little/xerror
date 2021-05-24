@@ -62,3 +62,8 @@ func (e *Error) MarshalJSON() ([]byte, error) {
 	// Otherwise call e.Err.Error() to format e.Err into a string.
 	return []byte(fmt.Sprintf(`{"error":"%s","functionName":"%s","fileName":"%s","lineNumber":"%d","message":"%s"}`, e.Err.Error(), e.FunctionName, e.FileName, e.LineNumber, e.Message)), nil
 }
+
+// Unwrap implements the Unwrap interface to allow unwrapping of nested errors with errors.Unwrap().
+func (e *Error) Unwrap() error {
+	return e.Err
+}
