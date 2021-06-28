@@ -34,7 +34,7 @@ func main() {
 
 func RunApplication() error {
 	if err := Initialize(); err != nil {
-		return xerror.New("failed to run application", err)
+		return xerror.Wrap("failed to run application", err)
 	}
 
 	return nil
@@ -42,7 +42,7 @@ func RunApplication() error {
 
 func Initialize() error {
 	if err := LoadConfig(); err != nil {
-		return xerror.New("failed to initialize application", err)
+		return xerror.Wrap("failed to initialize application", err)
 	}
 
 	return nil
@@ -50,18 +50,19 @@ func Initialize() error {
 
 func LoadConfig() error {
 	_, err := os.Open("config.json")
-	return xerror.New("failed to load config", err)
+	return xerror.Wrap("failed to load config", err)
 }
 ```
 
 Running the above will output...
 ```
 main.RunApplication
-        /home/ubuntu/xerror-example/main.go:52: failed to run application
+        /home/ubuntu/xerror/main.go:21: failed to run application
 main.Initialize
-        /home/ubuntu/xerror-example/main.go:60: failed to initialize application
+        /home/ubuntu/xerror/main.go:29: failed to initialize application
 main.LoadConfig
-        /home/ubuntu/xerror-example/main.go:67: failed to load config: file does not exist
+        /home/ubuntu/xerror/main.go:37: failed to load config: open config.json: no such file or directory
+exit status 1
 ```
 
 Or can be marshaled into JSON and output...
@@ -69,24 +70,20 @@ Or can be marshaled into JSON and output...
 {
     "error": {
         "error": {
-            "error": {
-                "Op": "open",
-                "Path": "config.json",
-                "Err": 2
-            },
+            "error": "open config.json: no such file or directory",
             "functionName": "main.LoadConfig",
-            "fileName": "/home/ubuntu/xerror-example/main.go",
-            "lineNumber": 76,
+            "fileName": "/home/ubuntu/xerror/cmd/main.go",
+            "lineNumber": "39",
             "message": "failed to load config"
         },
         "functionName": "main.Initialize",
-        "fileName": "/home/ubuntu/xerror-example/main.go",
-        "lineNumber": 68,
+        "fileName": "/home/ubuntu/xerror/cmd/main.go",
+        "lineNumber": "31",
         "message": "failed to initialize application"
     },
     "functionName": "main.RunApplication",
-    "fileName": "/home/ubuntu/xerror-example/main.go",
-    "lineNumber": 60,
+    "fileName": "/home/ubuntu/xerror/cmd/main.go",
+    "lineNumber": "23",
     "message": "failed to run application"
 }
 ```
