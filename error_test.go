@@ -33,7 +33,7 @@ func TestNewf(t *testing.T) {
 		Err:          errors.New("the thing that failed"),
 		FunctionName: "github.com/gofor-little/xerror.Newf",
 		FileName:     workingDirectory + "/error.go",
-		LineNumber:   33,
+		LineNumber:   34,
 		Message:      "",
 	}
 

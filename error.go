@@ -5,9 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"runtime"
+	"strings"
 )
 
-// Error wraps an error with additonal data that is used to create a stack strace.
+// Error wraps an error with additional data that is used to create a stack strace.
 type Error struct {
 	Err          error  `json:"error"`
 	FunctionName string `json:"functionName"`
@@ -46,7 +47,7 @@ func Wrap(message string, err error) *Error {
 	}
 }
 
-// Error implementes the error interface to provide a formatted stack trace.
+// Error implements the error interface to provide a formatted stack trace.
 func (e *Error) Error() string {
 	if err, ok := e.Err.(*Error); ok {
 		return fmt.Sprintf("%s\n\t%s:%d: %s\n%s", e.FunctionName, e.FileName, e.LineNumber, e.Message, err.Error())
@@ -59,7 +60,7 @@ func (e *Error) Error() string {
 	return fmt.Sprintf("%s\n\t%s:%d: %s: %s", e.FunctionName, e.FileName, e.LineNumber, e.Message, e.Err.Error())
 }
 
-// MarshalJSON implementes the json.Marshaler interface to provide a valid JSON output.
+// MarshalJSON implements the json.Marshaler interface to provide a valid JSON output.
 func (e *Error) MarshalJSON() ([]byte, error) {
 	// If e.Err is of type Error call json.Marshal on e.Err.
 	if err, ok := e.Err.(*Error); ok {
@@ -76,7 +77,7 @@ func (e *Error) MarshalJSON() ([]byte, error) {
 	}
 
 	// Otherwise call e.Err.Error() to format e.Err into a string.
-	return []byte(fmt.Sprintf(`{"error":"%s","functionName":"%s","fileName":"%s","lineNumber":"%d","message":"%s"}`, e.Err.Error(), e.FunctionName, e.FileName, e.LineNumber, e.Message)), nil
+	return []byte(fmt.Sprintf(`{"error":"%s","functionName":"%s","fileName":"%s","lineNumber":"%d","message":"%s"}`, strings.Replace(e.Err.Error(), `"`, `\"`, -1), e.FunctionName, e.FileName, e.LineNumber, e.Message)), nil
 }
 
 // Unwrap implements the Unwrap interface to allow unwrapping of nested errors with errors.Unwrap().
