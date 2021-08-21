@@ -47,6 +47,11 @@ func Wrap(message string, err error) *Error {
 	}
 }
 
+// Wrap is a helper function to wrap another Error with formatting.
+func Wrapf(message string, err error, args ...interface{}) * Error {
+	return Wrap(fmt.Sprintf(message, args...), err)
+}
+
 // Error implements the error interface to provide a formatted stack trace.
 func (e *Error) Error() string {
 	if err, ok := e.Err.(*Error); ok {

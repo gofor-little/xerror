@@ -54,3 +54,18 @@ func TestWrap(t *testing.T) {
 
 	require.Equal(t, expected, xerror.Wrap("failed to do something", errors.New("the thing that failed")))
 }
+
+func TestWrapf(t *testing.T) {
+	workingDirectory, err := os.Getwd()
+	require.NoError(t, err)
+
+	expected := &xerror.Error{
+		Err:          errors.New("the thing that failed"),
+		FunctionName: "github.com/gofor-little/xerror.Wrapf",
+		FileName:     workingDirectory + "/error.go",
+		LineNumber:   52,
+		Message:      "failed to do something: was this",
+	}
+
+	require.Equal(t, expected, xerror.Wrapf("failed to do something: %s", errors.New("the thing that failed"), "was this"))
+}
