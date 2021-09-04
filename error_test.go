@@ -33,7 +33,7 @@ func TestNewf(t *testing.T) {
 		Err:          errors.New("the thing that failed"),
 		FunctionName: "github.com/gofor-little/xerror.Newf",
 		FileName:     workingDirectory + "/error.go",
-		LineNumber:   34,
+		LineNumber:   33,
 		Message:      "",
 	}
 
@@ -63,7 +63,7 @@ func TestWrapf(t *testing.T) {
 		Err:          errors.New("the thing that failed"),
 		FunctionName: "github.com/gofor-little/xerror.Wrapf",
 		FileName:     workingDirectory + "/error.go",
-		LineNumber:   52,
+		LineNumber:   51,
 		Message:      "failed to do something: was this",
 	}
 

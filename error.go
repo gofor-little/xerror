@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"runtime"
-	"strings"
 )
 
 // Error wraps an error with additional data that is used to create a stack strace.
@@ -48,7 +47,7 @@ func Wrap(message string, err error) *Error {
 }
 
 // Wrap is a helper function to wrap another Error with formatting.
-func Wrapf(message string, err error, args ...interface{}) * Error {
+func Wrapf(message string, err error, args ...interface{}) *Error {
 	return Wrap(fmt.Sprintf(message, args...), err)
 }
 
@@ -65,24 +64,24 @@ func (e *Error) Error() string {
 	return fmt.Sprintf("%s\n\t%s:%d: %s: %s", e.FunctionName, e.FileName, e.LineNumber, e.Message, e.Err.Error())
 }
 
-// MarshalJSON implements the json.Marshaler interface to provide a valid JSON output.
+// MarshalJSON implements the json.Marshaler interface to provide a valid JSON output. This is required
+// because errors created from errors.New() do not implement the fmt.Stringer interface and therefore
+// will not print anything.
 func (e *Error) MarshalJSON() ([]byte, error) {
-	// If e.Err is of type Error call json.Marshal on e.Err.
-	if err, ok := e.Err.(*Error); ok {
-		data, _err := json.Marshal(err)
-		if _err != nil {
-			return nil, _err
-		}
-
-		if e.Message != "" {
-			return []byte(fmt.Sprintf(`{"error":%s,"functionName":"%s","fileName":"%s","lineNumber":"%d","message":"%s"}`, data, e.FunctionName, e.FileName, e.LineNumber, e.Message)), nil
-		}
-
-		return []byte(fmt.Sprintf(`{"error":%s,"functionName":"%s","fileName":"%s","lineNumber":"%d"}`, data, e.FunctionName, e.FileName, e.LineNumber)), nil
-	}
-
-	// Otherwise call e.Err.Error() to format e.Err into a string.
-	return []byte(fmt.Sprintf(`{"error":"%s","functionName":"%s","fileName":"%s","lineNumber":"%d","message":"%s"}`, strings.Replace(e.Err.Error(), `"`, `\"`, -1), e.FunctionName, e.FileName, e.LineNumber, e.Message)), nil
+	return json.Marshal(&struct {
+		Err          string `json:"error"`
+		FunctionName string `json:"functionName"`
+		FileName     string `json:"fileName"`
+		LineNumber   int    `json:"lineNumber"`
+		Message      string `json:"message"`
+	}{
+		// Get the string value of the error.
+		Err:          e.Err.Error(),
+		FunctionName: e.FunctionName,
+		FileName:     e.FileName,
+		LineNumber:   e.LineNumber,
+		Message:      e.Message,
+	})
 }
 
 // Unwrap implements the Unwrap interface to allow unwrapping of nested errors with errors.Unwrap().
