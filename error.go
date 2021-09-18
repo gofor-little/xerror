@@ -20,6 +20,8 @@ type Error struct {
 func New(message string) *Error {
 	pc, fileName, lineNumber, _ := runtime.Caller(1)
 
+	foo := 1
+
 	return &Error{
 		Err:          errors.New(message),
 		FileName:     fileName,
