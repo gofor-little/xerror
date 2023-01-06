@@ -1,47 +1,35 @@
 name: CI
-
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
-
+    branches:
+      - main
+permissions:
+  contents: write
+  id-token: write
 jobs:
   lint:
     name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: golangci/golangci-lint-action@v2
-
-  analyze:
-    name: Analyze
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'go' ]
-    steps:
-    - uses: actions/checkout@v2
-    - uses: github/codeql-action/init@v1
-      with:
-        languages: ${{ matrix.language }}
-    - uses: github/codeql-action/autobuild@v1
-    - uses: github/codeql-action/analyze@v1
-
+    uses: gofor-little/github-actions/.github/workflows/golang-lint.yaml@main
   test:
     name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
-        with:
-          go-version: ^1.17
-      - run: |
-          go get -v -t -d ./...
-      - run: |
-          go test -v ./...
+    uses: gofor-little/github-actions/.github/workflows/golang-test.yaml@main
+  bump-tag:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs:
+      - lint
+      - test
+    name: Bump Tag
+    uses: gofor-little/github-actions/.github/workflows/bump-tag.yaml@main
+  release:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs:
+      - bump-tag
+    name: Release
+    uses: gofor-little/github-actions/.github/workflows/github-release.yaml@main
+    with:
+      tag: ${{ needs.bump-tag.outputs.bumped-tag }}
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
